@@ -47,7 +47,7 @@ function loadCardData() {
             name: rawCard.title,
             faction: rawCard.faction_code,
             cost: (rawCard.cost ? `${rawCard.cost}[credit]` : `0`),
-            types: `${rawCard.type_code.substring(0, 1).toUpperCase()}${rawCard.type_code.substring(1)}`,
+            types: [`${rawCard.type_code.substring(0, 1).toUpperCase()}${rawCard.type_code.substring(1)}`],
             subtypes: (rawCard.keywords ? rawCard.keywords.split(' - ') : []),
             text: rawCard.text || null,
             printings: [{
@@ -115,6 +115,6 @@ async function createSearchIndex(cards) {
 (async () => {
     const cards = loadCardData();
     // await deleteAllCards();
-    // await importCards(cards);
+    await importCards(cards);
     // await createSearchIndex(cards);
 })();
