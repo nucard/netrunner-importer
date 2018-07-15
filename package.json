@@ -1,0 +1,28 @@
+{
+  "name": "nucard-netrunner-importer",
+  "version": "1.0.0",
+  "description": "A tiny little node program to import data formatted and supplied by netrunnerdb.com into a database for my NuCard Netrunner API.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nucard/netrunner-importer.git"
+  },
+  "keywords": [
+    "nucard",
+    "mtg"
+  ],
+  "author": "Jammerware",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nucard/netrunner-importer/issues"
+  },
+  "homepage": "https://github.com/nucard/netrunner-importer#readme",
+  "dependencies": {
+    "algoliasearch": "^3.29.0",
+    "firebase-admin": "^5.12.1",
+    "lodash": "^4.17.10"
+  }
+}
