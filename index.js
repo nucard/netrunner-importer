@@ -103,6 +103,7 @@ async function createSearchIndex(cards) {
             name: card.name,
             objectID: card.id,
             flavorText: card.flavorText,
+            searchImage: card.printings[0].image || null,
             text: card.text,
         });
     }
