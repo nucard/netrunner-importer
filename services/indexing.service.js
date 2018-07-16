@@ -11,4 +11,9 @@ module.exports = class IndexingService {
         this._index = this._client.initIndex(indexName);
         return this._index.saveObjects(objects);
     }
+
+    deleteIndex(indexName) {
+        console.log(`Deleting index "${indexName}"...`);
+        this._client.deleteIndex(indexName);
+    }
 }
