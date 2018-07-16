@@ -1,3 +1,4 @@
+const NodeRequest = require('request');
 const rawData = require('./data/cards.json');
 const _ = require('lodash');
 const firebase = require('firebase-admin');
@@ -37,31 +38,72 @@ function deleteAllCards() {
     })
 }
 
-function loadCardData() {
+async function getPacks() {
+    return new Promise((resolve, reject) => {
+        NodeRequest.get('https://netrunnerdb.com/api/2.0/public/packs', (error, response, body) => {
+            if (error) reject(error);
+
+            resolve(JSON.parse(body).data);
+        });
+    });
+}
+
+async function getCycles() {
+    return new Promise((resolve, reject) => {
+        NodeRequest.get('https://netrunnerdb.com/api/2.0/public/cycles', (error, response, body) => {
+            if (error) reject(error);
+
+            resolve(JSON.parse(body).data);
+        });
+    });
+}
+
+async function loadCardData() {
     const cards = [];
+
+    const packs = await getPacks();
+    const cycles = await getCycles();
+
     const imageTemplate = rawData.imageUrlTemplate;
 
     for (const rawCard of rawData.data) {
-        let card = {
-            id: rawCard.code,
-            name: rawCard.title,
-            faction: rawCard.faction_code,
-            cost: (rawCard.cost ? `${rawCard.cost}[credit]` : `0`),
-            types: [`${rawCard.type_code.substring(0, 1).toUpperCase()}${rawCard.type_code.substring(1)}`],
-            subtypes: (rawCard.keywords ? rawCard.keywords.split(' - ') : []),
-            text: rawCard.text || null,
-            printings: [{
-                artist: rawCard.illustrator || 'Unknown',
-                flavorText: rawCard.flavor || null,
-                image: rawCard.image_url || null
-            }]
+        let card = cards.find(c => c.name === rawCard.title);
+
+        if (!card) {
+            card = {
+                id: rawCard.code,
+                name: rawCard.title,
+                faction: rawCard.faction_code,
+                cost: (rawCard.cost ? `${rawCard.cost}[credit]` : `0`),
+                types: [`${rawCard.type_code.substring(0, 1).toUpperCase()}${rawCard.type_code.substring(1)}`],
+                subtypes: (rawCard.keywords ? rawCard.keywords.split(' - ') : []),
+                text: rawCard.text || null,
+                printings: [],
+            };
+            cards.push(card);
+        }
+
+        // get printed in pack
+        const printedInPack = packs.find(p => p.code === rawCard.pack_code);
+        const printedInCycle = cycles.find(c => c.code === printedInPack.cycle_code);
+
+        const printing = {
+            artist: rawCard.illustrator || 'Unknown',
+            flavorText: rawCard.flavor || null,
+            image: rawCard.image_url || null,
+            printedIn: `${printedInPack.name}`,
         };
 
-        cards.push(card);
+        // only append the cycle in parentheses if it's not equal to the pack name (like core set is)
+        if (printedInCycle && printedInCycle.name !== printing.printedIn) {
+            printing.printedIn = `${printing.printedIn} (${printedInCycle.name})`;
+        }
+
+        card.printings.push(printing);
     }
 
     console.log(`Loaded ${cards.length} cards from raw data...`);
-    return _.values(cards);
+    return cards;
 }
 
 function importCards(cards) {
@@ -72,7 +114,6 @@ function importCards(cards) {
         console.log(`Adding ${cards.length} cards...`);
 
         for (let i = 0; i < cards.length; i++) {
-            console.log(i);
             const cardRef = db.collection('cards').doc(cards[i].id);
 
             batch.set(cardRef, cards[i]);
@@ -113,8 +154,8 @@ async function createSearchIndex(cards) {
 }
 
 (async () => {
-    const cards = loadCardData();
+    const cards = await loadCardData();
     // await deleteAllCards();
     await importCards(cards);
-    // await createSearchIndex(cards);
+    await createSearchIndex(cards);
 })();
