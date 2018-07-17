@@ -90,7 +90,7 @@ async function loadCardData() {
         const printing = {
             artist: rawCard.illustrator || 'Unknown',
             flavorText: rawCard.flavor || null,
-            image: rawCard.image_url || `https://netrunnerdb.com/card_image/${rawCard.code}`,
+            image: rawCard.image_url || `https://netrunnerdb.com/card_image/${rawCard.code}.png`,
             printedIn: `${printedInPack.name}`,
         };
 
