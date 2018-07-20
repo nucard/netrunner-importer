@@ -73,7 +73,7 @@ async function loadCardData() {
             card = {
                 id: rawCard.code,
                 name: rawCard.title,
-                faction: rawCard.faction_code,
+                factionId: rawCard.faction_code,
                 cost: (rawCard.cost ? `${rawCard.cost}[credit]` : `0`),
                 types: [`${rawCard.type_code.substring(0, 1).toUpperCase()}${rawCard.type_code.substring(1)}`],
                 subtypes: (rawCard.keywords ? rawCard.keywords.split(' - ') : []),
