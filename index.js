@@ -144,7 +144,6 @@ async function createSearchIndex(cards) {
             name: card.name,
             objectID: card.id,
             flavorText: card.flavorText,
-            searchImage: card.printings[0].image || null,
             text: card.text,
         });
     }
@@ -156,6 +155,6 @@ async function createSearchIndex(cards) {
 (async () => {
     const cards = await loadCardData();
     // await deleteAllCards();
-    await importCards(cards);
+    // await importCards(cards);
     await createSearchIndex(cards);
 })();
