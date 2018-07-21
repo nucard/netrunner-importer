@@ -80,6 +80,15 @@ async function loadCardData() {
                 text: rawCard.text || null,
                 printings: [],
             };
+
+            // add identity extra attrs if appropriate
+            if (rawCard.type_code === 'identity') {
+                card.extraAttributes = [{
+                    name: 'Deck size minimum / Influence',
+                    value: `${rawCard.minimum_deck_size} / ${rawCard.influence_limit}`,
+                }];
+            }
+
             cards.push(card);
         }
 
@@ -155,6 +164,6 @@ async function createSearchIndex(cards) {
 (async () => {
     const cards = await loadCardData();
     // await deleteAllCards();
-    // await importCards(cards);
+    await importCards(cards);
     await createSearchIndex(cards);
 })();
