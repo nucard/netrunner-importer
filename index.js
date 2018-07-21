@@ -83,10 +83,16 @@ async function loadCardData() {
 
             // add identity extra attrs if appropriate
             if (rawCard.type_code === 'identity') {
-                card.extraAttributes = [{
-                    name: 'Deck size minimum / Influence',
-                    value: `${rawCard.minimum_deck_size} / ${rawCard.influence_limit || '--'}`,
-                }];
+                card.extraAttributes = [
+                    {
+                        name: 'Deck size minimum / Influence',
+                        value: `${rawCard.minimum_deck_size} / ${rawCard.influence_limit || '--'}`,
+                    },
+                    {
+                        name: "Base link",
+                        value: rawCard.base_link || "0",
+                    },
+                ];
             }
 
             cards.push(card);
